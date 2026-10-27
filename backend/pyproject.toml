@@ -5,8 +5,16 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.162.0",
     "pydantic-settings>=2.16.1",
+    "sqlmodel>=0.0.48",
     "uvicorn[standard]>=0.54.0",
 ]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]
 
 # --- ruff ---------------------------------------------------------------------
 
@@ -77,3 +85,7 @@ strict = true
 
 [dependency-groups]
 dev = ["pyright>=1.1.414", "pytest>=9.1.1", "ruff>=0.17.2"]
+
+[project.scripts]
+server-dev = "src.main:server_dev"
+server-prod = "src.main:server_prod"
