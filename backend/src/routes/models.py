@@ -2,8 +2,6 @@ import typing
 
 import pydantic
 
-from src.database import models as db_models
-
 
 class ErrorDetail(pydantic.BaseModel):
     code: int
@@ -21,5 +19,14 @@ class APIResponse(pydantic.BaseModel):
     )
 
 
+class ProjectResponseData(pydantic.BaseModel):
+    name: str
+    path: str
+
+
 class FetchProjectsResponse(APIResponse):
-    data: list[db_models.Project] = []
+    data: list[ProjectResponseData] = []
+
+
+class ProjectResponse(APIResponse):
+    data: ProjectResponseData | None = None

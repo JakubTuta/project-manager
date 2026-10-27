@@ -1,3 +1,6 @@
+import datetime
+
+import pytz
 import sqlmodel
 
 
@@ -5,6 +8,9 @@ class Project(sqlmodel.SQLModel, table=True):
     id: int | None = sqlmodel.Field(default=None, primary_key=True)
     name: str = sqlmodel.Field(sa_column=sqlmodel.Column("name", sqlmodel.String, unique=True))
     path: str
+    last_fetched: datetime.datetime = sqlmodel.Field(
+        default_factory=lambda: datetime.datetime.now(pytz.timezone("Europe/Warsaw"))
+    )
 
 
 class Commands(sqlmodel.SQLModel, table=True):
