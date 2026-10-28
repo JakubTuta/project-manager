@@ -60,11 +60,11 @@ async def fetch_projects(db_session: db_manager.SessionDep) -> models.FetchProje
     )
 
 
-@router.get("/projects/{project_id}", response_model=models.ProjectResponse)
-async def fetch_project(
-    project_id: int, db_session: db_manager.SessionDep
-) -> models.ProjectResponse:
-    project = db_session.get(db_models.Project, project_id)
+@router.get("/projects/{name}", response_model=models.ProjectResponse)
+async def fetch_project(name: str, db_session: db_manager.SessionDep) -> models.ProjectResponse:
+    project = db_session.exec(
+        sqlmodel.select(db_models.Project).where(db_models.Project.name == name)
+    ).first()
 
     if project is None:
         return models.ProjectResponse(

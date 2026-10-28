@@ -1,3 +1,4 @@
+import { type APIResponse } from "@/types/api";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { create } from "zustand";
 
@@ -26,6 +27,6 @@ export const useApiStore = create<ApiState>(() => ({
     if (data) config.data = data;
     if (headers) config.headers = headers;
 
-    return await axios.request(config);
+    return await axios.request<APIResponse>(config);
   },
 }));
