@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { useProjectsStore } from "./stores/projects";
+import { useEffect } from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -30,6 +32,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const fetchProjects = useProjectsStore((state) => state.fetchProjects);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
   return <Outlet />;
 }
 
