@@ -11,7 +11,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { useProjectsStore } from "./stores/projects";
 import { useEffect } from "react";
-import Navbar from "./components/shadcn-space/blocks/navbar";
+import Navbar from "./components/shadcn-space/navbar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +26,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <main>
           <Navbar />
 
-          {children}
+          <div className="max-w-7xl xl:px-16 lg:px-8 px-4 mx-auto flex flex-col">
+            {children}
+          </div>
         </main>
 
         <ScrollRestoration />
@@ -37,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const fetchProjects = useProjectsStore((state) => state.fetchProjects);
+  const { fetchProjects } = useProjectsStore();
 
   useEffect(() => {
     fetchProjects();

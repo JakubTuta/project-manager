@@ -1,19 +1,19 @@
-import Bentogrid from "@/components/shadcn-space/blocks/bentogrid";
+import Bentogrid from "@/components/shadcn-space/bentogrid";
 import { useProjectsStore } from "@/stores/projects";
 
 export default function Home() {
-  const projects = useProjectsStore((state) => state.projects);
-  const isLoading = useProjectsStore((state) => state.isLoading);
-  const error = useProjectsStore((state) => state.error);
+  const { projects, isLoadingProjects, errorProjects } = useProjectsStore();
 
   return (
     <div>
       <section className="space-y-4 p-6">
-        {isLoading && <p>Loading projects...</p>}
+        {isLoadingProjects && <p>Loading projects...</p>}
 
-        {error && <p role="alert">Error loading projects: {error}</p>}
+        {errorProjects && (
+          <p role="alert">Error loading projects: {errorProjects}</p>
+        )}
 
-        {!isLoading && !error && projects.length === 0 && (
+        {!isLoadingProjects && !errorProjects && projects.length === 0 && (
           <p>No projects found</p>
         )}
 

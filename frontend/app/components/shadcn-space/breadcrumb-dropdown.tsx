@@ -18,15 +18,19 @@ import { useProjectsStore } from "@/stores/projects";
 import { Link } from "react-router";
 
 export default function BreadcrumbDropdown() {
-  const projects = useProjectsStore((state) => state.projects);
+  const { projects, selectedProject } = useProjectsStore();
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink render={<Link to="/home" />}>
-            <Button variant="ghost" className="text-foreground rounded-full">
-              <HomeIcon className="size-5" />
+            <Button
+              variant="ghost"
+              className="text-foreground rounded-full cursor-pointer"
+            >
+              <HomeIcon className="size-5 mr-1" />
+
               <span className="text-xl">Home</span>
             </Button>
           </BreadcrumbLink>
@@ -38,7 +42,10 @@ export default function BreadcrumbDropdown() {
           <BreadcrumbPage>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 cursor-pointer">
-                <span className="text-xl">Projects</span>
+                <span className="text-xl">
+                  {selectedProject ? selectedProject.name : "Projects"}
+                </span>
+
                 <ChevronDownIcon className="size-5" />
               </DropdownMenuTrigger>
 

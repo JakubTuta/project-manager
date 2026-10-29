@@ -4,10 +4,8 @@ import { useParams } from "react-router";
 
 export default function Project() {
   const { name } = useParams();
-  const fetchProject = useProjectsStore((state) => state.fetchProject);
-  const selectedProject = useProjectsStore((state) => state.selectedProject);
-  const isLoading = useProjectsStore((state) => state.isLoading);
-  const error = useProjectsStore((state) => state.error);
+  const { fetchProject, selectedProject, isLoadingProjects, errorProjects } =
+    useProjectsStore();
 
   if (!name) return <div>Error: empty name</div>;
 
@@ -17,11 +15,15 @@ export default function Project() {
 
   return (
     <section className="space-y-4 p-6">
-      {isLoading && <p>Loading project...</p>}
+      {isLoadingProjects && <p>Loading project...</p>}
 
-      {error && <p role="alert">Error loading project: {error}</p>}
+      {errorProjects && (
+        <p role="alert">Error loading project: {errorProjects}</p>
+      )}
 
-      {!isLoading && !error && !selectedProject && <p>Project not found</p>}
+      {!isLoadingProjects && !errorProjects && !selectedProject && (
+        <p>Project not found</p>
+      )}
 
       {selectedProject && <div>{selectedProject.name}</div>}
     </section>
