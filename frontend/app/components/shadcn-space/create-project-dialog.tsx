@@ -110,7 +110,7 @@ export default function CreateProjectDialog() {
                       {...field}
                       id="create-project-name"
                       aria-invalid={fieldState.invalid}
-                      placeholder="Project"
+                      placeholder="My project"
                       autoComplete="off"
                     />
                     {fieldState.invalid && (
@@ -126,15 +126,17 @@ export default function CreateProjectDialog() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="create-project-path">
-                      Project file path
+                      Enter project root path
                     </FieldLabel>
+
                     <Input
                       {...field}
                       id="create-project-path"
                       aria-invalid={fieldState.invalid}
-                      placeholder="C:\Users\...\Projects"
+                      placeholder="C:\Users\...\Projects\my_project"
                       autoComplete="off"
                     />
+
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

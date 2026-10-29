@@ -1,5 +1,13 @@
-import Bentogrid from "@/components/shadcn-space/bentogrid";
 import { useProjectsStore } from "@/stores/projects";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { FolderCode } from "lucide-react";
+import ProjectsTable from "@/components/shadcn-space/projects-table";
 
 export default function Home() {
   const { projects, isLoadingProjects, errorProjects } = useProjectsStore();
@@ -14,10 +22,21 @@ export default function Home() {
         )}
 
         {!isLoadingProjects && !errorProjects && projects.length === 0 && (
-          <p>No projects found</p>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FolderCode />
+              </EmptyMedia>
+              <EmptyTitle>No Projects Yet</EmptyTitle>
+              <EmptyDescription>
+                You haven't created any projects yet. Get started by creating
+                your first project.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
 
-        {projects.length > 0 && <Bentogrid />}
+        {projects.length > 0 && <ProjectsTable />}
       </section>
     </div>
   );
