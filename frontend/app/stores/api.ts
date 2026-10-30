@@ -11,17 +11,28 @@ interface ApiState {
   ) => Promise<AxiosResponse>;
 }
 
-export const useApiStore = create<ApiState>(() => ({
+export const useApiStore = create<ApiState>((set, get) => ({
   call: async (
     url: string,
     method: "GET" | "POST" | "DELETE" | "PATCH" | "PUT" = "GET",
     data: object | null = null,
     headers: object | null = null,
   ) => {
+    const token = import.meta.env.VITE_TOKEN;
+
+    if (!token)
+      console.error(
+        "VITE_ERROR wasn't set by the server. Without it API won't work",
+      );
+
     const config: AxiosRequestConfig = {
       url,
       baseURL: "http://localhost:8000",
       method,
+      headers: {
+        "Content-Type": "application/json",
+        "X-APP-TOKEN": token,
+      },
     };
 
     if (data) config.data = data;

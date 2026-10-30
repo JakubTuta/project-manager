@@ -19,14 +19,44 @@ class APIResponse(pydantic.BaseModel):
     )
 
 
-class ProjectResponseData(pydantic.BaseModel):
+# PROJECTS
+
+
+class ProjectData(pydantic.BaseModel):
+    id: int
     name: str
     path: str
 
 
 class FetchProjectsResponse(APIResponse):
-    data: list[ProjectResponseData] = []
+    data: list[ProjectData] = []
 
 
 class ProjectResponse(APIResponse):
-    data: ProjectResponseData | None = None
+    data: ProjectData | None = None
+
+
+# COMMANDS
+
+command_labels = typing.Literal["build", "run", "stop"]
+
+
+class CommandRequest(pydantic.BaseModel):
+    project_name: str
+    label: command_labels
+    command: str
+
+
+class CommandData(pydantic.BaseModel):
+    id: int
+    project_name: str
+    label: command_labels
+    command: str
+
+
+class CreateCommandResponse(APIResponse):
+    data: CommandData | None = None
+
+
+class FetchCommandsResponse(APIResponse):
+    data: list[CommandData] = []

@@ -1,11 +1,13 @@
-"use client";
 import {
-  createColumnHelper,
-  useTable,
-  tableFeatures,
   columnVisibilityFeature,
+  createColumnHelper,
   flexRender,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
+import { ArrowRight, Hammer, Play, Square } from "lucide-react";
+import { Link } from "react-router";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -15,26 +17,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProjectsStore } from "@/stores/projects";
-import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Hammer, Play, Square } from "lucide-react";
-
-export interface TableType {
-  name: string;
-  path: string;
-  actions: string;
-  goToProject: string;
-}
-
-// const statusColors: Record<string, string> = {
-//   Active: "bg-teal-400/10 text-teal-400 hover:bg-teal-400/10",
-//   Pending: "bg-orange-400/10 text-orange-400 hover:bg-orange-400/10",
-//   Inactive: "bg-red-500/10 text-red-500 hover:bg-red-500/10",
-// };
+import type { Project } from "@/types/project";
 
 const features = tableFeatures({ columnVisibilityFeature });
-
-const columnHelper = createColumnHelper<typeof features, TableType>();
+const columnHelper = createColumnHelper<typeof features, Project>();
 
 const columns = columnHelper.columns([
   columnHelper.accessor("name", {
@@ -43,26 +29,63 @@ const columns = columnHelper.columns([
   }),
   columnHelper.accessor("path", {
     header: () => <span>Folder path</span>,
-    cell: (info) => <span className="text-base">{info.getValue()}</span>,
+    cell: (info) => (
+      <span className="text-base text-muted-foreground">{info.getValue()}</span>
+    ),
   }),
-  columnHelper.accessor("actions", {
-    header: () => <span>Quick actions</span>,
-    cell: (info) => <span className="text-base">{info.getValue()}</span>,
+  columnHelper.display({
+    id: "commands",
+    header: () => <span>Quick commands</span>,
+    cell: () => (
+      <div className="flex items-center gap-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Build project"
+          title="Build project"
+          className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+        >
+          <Hammer />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Run project"
+          title="Run project"
+          className="text-green-600 hover:text-green-700 dark:text-green-400"
+        >
+          <Play fill="currentColor" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Stop project"
+          title="Stop project"
+          className="text-red-600 hover:text-red-700 dark:text-red-400"
+        >
+          <Square fill="currentColor" />
+        </Button>
+      </div>
+    ),
   }),
-  columnHelper.accessor("goToProject", {
+  columnHelper.display({
+    id: "project",
     header: () => <span>See project</span>,
-    cell: (info) => <span className="text-base">{info.getValue()}</span>,
+    cell: ({ row }) => (
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Open ${row.original.name}`}
+        title={`Open ${row.original.name}`}
+        render={<Link to={`/project/${row.original.name}`} />}
+      >
+        <ArrowRight />
+      </Button>
+    ),
   }),
-  //   columnHelper.accessor("status", {
-  //     header: () => <span>Status</span>,
-  //     cell: (info) => (
-  //       <Badge
-  //         className={`${statusColors[info.getValue()]} border-0 capitalize shadow-none`}
-  //       >
-  //         {info.getValue()}
-  //       </Badge>
-  //     ),
-  //   }),
 ]);
 
 export default function ProjectsTable() {
@@ -75,7 +98,7 @@ export default function ProjectsTable() {
   });
 
   return (
-    <section className="border rounded-md border-border overflow-hidden">
+    <section className="overflow-hidden rounded-md border border-border">
       <div className="overflow-x-auto">
         <Table className="min-w-full">
           <TableHeader>
@@ -99,12 +122,10 @@ export default function ProjectsTable() {
           </TableHeader>
 
           <TableBody className="divide-y divide-border">
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row
-                  .getVisibleCells()
-                  .slice(0, row.getVisibleCells().length - 2)
-                  .map((cell) => (
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       className="whitespace-nowrap py-4 px-4"
@@ -115,32 +136,18 @@ export default function ProjectsTable() {
                       )}
                     </TableCell>
                   ))}
-
-                <TableCell className="whitespace-nowrap py-4 px-4 flex">
-                  <Button variant="ghost" size="icon">
-                    <Hammer color="blue" />
-                  </Button>
-
-                  <Button variant="ghost" size="icon">
-                    <Play color="green" />
-                  </Button>
-
-                  <Button variant="ghost" size="icon">
-                    <Square color="red" />
-                  </Button>
-                </TableCell>
-
-                <TableCell className="whitespace-nowrap py-4 px-4">
-                  <Button variant="ghost" size="icon">
-                    <Link
-                      to={`/project/${row.getVisibleCells()[0].getValue()}`}
-                    >
-                      <ArrowRight />
-                    </Link>
-                  </Button>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="py-8 text-center text-muted-foreground"
+                >
+                  No projects yet.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
