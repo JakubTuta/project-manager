@@ -23,7 +23,7 @@ class APIResponse(pydantic.BaseModel):
 
 
 class ProjectData(pydantic.BaseModel):
-    id: int
+    id: int | None = None
     name: str
     path: str
 
@@ -48,7 +48,7 @@ class CommandRequest(pydantic.BaseModel):
 
 
 class CommandData(pydantic.BaseModel):
-    id: int
+    id: int | None = None
     project_name: str
     label: command_labels
     command: str

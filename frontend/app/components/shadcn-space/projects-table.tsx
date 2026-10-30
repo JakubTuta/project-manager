@@ -5,7 +5,7 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import { ArrowRight, Hammer, Play, Square } from "lucide-react";
+import { ArrowRight, Hammer, Play, Square, Trash } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,15 +81,21 @@ const columns = columnHelper.columns([
         aria-label={`Open ${row.original.name}`}
         title={`Open ${row.original.name}`}
         render={<Link to={`/project/${row.original.name}`} />}
+        nativeButton={false}
       >
         <ArrowRight />
       </Button>
     ),
   }),
+  columnHelper.display({
+    id: "delete",
+    header: () => <span>Delete</span>,
+  }),
 ]);
 
 export default function ProjectsTable() {
   const data = useProjectsStore((state) => state.projects);
+  const deleteProject = useProjectsStore((state) => state.deleteProject);
 
   const table = useTable({
     features,
@@ -130,9 +136,22 @@ export default function ProjectsTable() {
                       key={cell.id}
                       className="whitespace-nowrap py-4 px-4"
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+                      {cell.id.split("_")[1] === "delete" ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Delete ${row.original.name}`}
+                          title={`Delete ${row.original.name}`}
+                          onClick={() => deleteProject(row.original.id)}
+                          className="text-red-600 hover:text-red-700 dark:text-red-400"
+                        >
+                          <Trash />
+                        </Button>
+                      ) : (
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )
                       )}
                     </TableCell>
                   ))}

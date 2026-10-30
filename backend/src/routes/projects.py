@@ -19,6 +19,7 @@ async def create_project(
     project: models.ProjectData,
     db_session: db_manager.SessionDep,
 ) -> models.APIResponse:
+    print("create project called")
     if not path.Path(project.path).exists():
         return models.APIResponse(
             success=False,
@@ -37,8 +38,10 @@ async def create_project(
                 details={"path": project.path},
             ),
         )
+    print("correct path")
 
     try:
+        print(project.model_dump())
         db_project = db_models.Project(**project.model_dump())
         db_session.add(db_project)
         db_session.commit()
@@ -53,9 +56,13 @@ async def create_project(
             ),
         )
 
+    print("project created")
+    print(db_project)
+
     return models.ProjectResponse(
         success=True,
         data=models.ProjectData(
+            id=db_project.id,
             name=project.name,
             path=project.path,
         ),
@@ -74,6 +81,7 @@ async def fetch_projects(db_session: db_manager.SessionDep) -> models.APIRespons
         success=True,
         data=[
             models.ProjectData(
+                id=project.id,
                 name=project.name,
                 path=project.path,
             )
@@ -106,7 +114,33 @@ async def fetch_project(name: str, db_session: db_manager.SessionDep) -> models.
     return models.ProjectResponse(
         success=True,
         data=models.ProjectData(
+            id=project.id,
             name=project.name,
             path=project.path,
         ),
+    )
+
+
+@router.delete("/projects/{id}", response_model=models.APIResponse)
+async def delete_project(id: int, db_session: db_manager.SessionDep) -> models.APIResponse:
+    if (project := db_session.get(db_models.Project, id)) is None:
+        return models.APIResponse(
+            success=False,
+            error=models.ErrorDetail(
+                code=404,
+                message="Project not found",
+                details={"id": id},
+            ),
+        )
+
+    commands = db_session.exec(
+        sqlmodel.select(db_models.Commands).where(db_models.Commands.project_id == project.id)
+    ).all()
+
+    db_session.delete_all(commands)
+    db_session.delete(project)
+    db_session.commit()
+
+    return models.APIResponse(
+        success=True,
     )
