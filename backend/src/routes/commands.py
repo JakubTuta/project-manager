@@ -72,3 +72,21 @@ async def fetch_commands(
             for command in commands
         ],
     )
+
+
+@router.delete("/commands/{id}", response_model=models.APIResponse)
+async def delete_commend(id: int, db_session: db_manager.SessionDep) -> models.APIResponse:
+    if (command := db_session.get(db_models.Commands, id)) is None:
+        return models.APIResponse(
+            success=False,
+            error=models.ErrorDetail(
+                code=404,
+                message="Command not found",
+                details={"id": id},
+            ),
+        )
+
+    db_session.delete(command)
+    db_session.commit()
+
+    return models.APIResponse(success=True)

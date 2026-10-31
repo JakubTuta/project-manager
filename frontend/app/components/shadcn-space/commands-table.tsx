@@ -5,7 +5,7 @@ import {
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import { Play } from "lucide-react";
+import { Play, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +60,10 @@ const columns = columnHelper.columns([
       </Button>
     ),
   }),
+  columnHelper.display({
+    id: "delete",
+    header: () => <span>Delete</span>,
+  }),
 ]);
 
 export default function CommandsTable({
@@ -68,6 +72,7 @@ export default function CommandsTable({
   projectName: string;
 }) {
   const data = useCommandsStore((state) => state.commands);
+  const deleteCommand = useCommandsStore((state) => state.deleteCommand);
 
   const table = useTable({
     features,
@@ -110,9 +115,22 @@ export default function CommandsTable({
                       key={cell.id}
                       className="whitespace-nowrap py-4 px-4"
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+                      {cell.id.split("_")[1] === "delete" ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Delete ${row.original.label}`}
+                          title={`Delete ${row.original.label}`}
+                          onClick={() => deleteCommand(row.original.id)}
+                          className="text-red-600 hover:text-red-700 dark:text-red-400"
+                        >
+                          <Trash />
+                        </Button>
+                      ) : (
+                        flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )
                       )}
                     </TableCell>
                   ))}

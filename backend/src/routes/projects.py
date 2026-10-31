@@ -19,7 +19,6 @@ async def create_project(
     project: models.ProjectData,
     db_session: db_manager.SessionDep,
 ) -> models.APIResponse:
-    print("create project called")
     if not path.Path(project.path).exists():
         return models.APIResponse(
             success=False,
@@ -38,10 +37,8 @@ async def create_project(
                 details={"path": project.path},
             ),
         )
-    print("correct path")
 
     try:
-        print(project.model_dump())
         db_project = db_models.Project(**project.model_dump())
         db_session.add(db_project)
         db_session.commit()
@@ -55,9 +52,6 @@ async def create_project(
                 details={"name": project.name},
             ),
         )
-
-    print("project created")
-    print(db_project)
 
     return models.ProjectResponse(
         success=True,
@@ -141,6 +135,4 @@ async def delete_project(id: int, db_session: db_manager.SessionDep) -> models.A
     db_session.delete(project)
     db_session.commit()
 
-    return models.APIResponse(
-        success=True,
-    )
+    return models.APIResponse(success=True)

@@ -17,6 +17,11 @@ interface CommandsState {
   errorFetchCommands: string | null;
   commands: Command[];
   fetchCommands: (projectName: string) => Promise<void>;
+
+  // delete command
+  isLoadingDeleteCommand: boolean;
+  errorDeleteCommand: string | null;
+  deleteCommand: (id: number) => Promise<void>;
 }
 
 export const useCommandsStore = create<CommandsState>((set, get) => ({
@@ -25,6 +30,8 @@ export const useCommandsStore = create<CommandsState>((set, get) => ({
   isLoadingFetchCommands: false,
   errorFetchCommands: null,
   commands: [],
+  isLoadingDeleteCommand: false,
+  errorDeleteCommand: null,
 
   createCommand: async (
     projectName: string,
@@ -78,6 +85,29 @@ export const useCommandsStore = create<CommandsState>((set, get) => ({
       });
     } finally {
       set({ isLoadingFetchCommands: false });
+    }
+  },
+
+  deleteCommand: async (id: number) => {
+    if (get().isLoadingDeleteCommand) return;
+
+    set({ isLoadingDeleteCommand: true, errorDeleteCommand: null });
+
+    try {
+      const { call } = useApiStore.getState();
+      const response = await call(`/api/commands/${id}`, "DELETE");
+
+      if (response.data.success)
+        set({ commands: get().commands.filter((e) => e.id !== id) });
+      else if (response.data.error)
+        set({ errorDeleteCommand: response.data.error.message });
+    } catch (error) {
+      set({
+        errorDeleteCommand:
+          error instanceof Error ? error.message : "Failed to delete command",
+      });
+    } finally {
+      set({ isLoadingDeleteCommand: false });
     }
   },
 }));
